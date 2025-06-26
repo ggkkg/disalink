@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для самой милой Наташи</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.3); }
+            70% { transform: scale(1); }
+        }
+        
+        .heart-beat {
+            animation: heartBeat 1s infinite;
+        }
+        
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .message {
+            opacity: 0;
+            transition: all 0.5s ease;
+            transform: translateY(20px);
+        }
+        
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold text-pink-600 mb-2">Для самой милой</h1>
+        <h2 class="text-3xl md:text-4xl font-bold text-rose-600">Наташи</h2>
+    </div>
+    
+    <div class="relative">
+        <div id="heart" class="text-red-500 text-9xl cursor-pointer transform transition-all duration-300 hover:scale-110">
+            <i class="fas fa-heart"></i>
+        </div>
+    </div>
+    
+    <div id="messages" class="mt-8 space-y-4 w-full max-w-md">
+        <!-- Сообщения будут добавляться здесь -->
+    </div>
+    
+    <div class="mt-12 text-center">
+        <p class="text-lg text-gray-600 italic">С любовью к милой Наташи</p>
+    </div>
+    
+    <script>
+        const heart = document.getElementById('heart');
+        const messagesContainer = document.getElementById('messages');
+        
+        const loveMessages = [
+            "Ты самое прекрасное, что случилось в моей жизни!",
+            "Каждый день с тобой - это праздник!",
+            "Твоя улыбка делает мир ярче!",
+            "Я бесконечно благодарен за тебя!",
+            "Ты - моё самое большое счастье!",
+            "Люблю тебя больше, чем слова могут выразить!",
+            "Ты делаешь меня лучше каждый день!",
+            "Моё сердце бьётся только для тебя!",
+            "Ты - моя мечта, ставшая реальностью!",
+            "С тобой даже обычные дни становятся волшебными!"
+        ];
+        
+        let clickCount = 0;
+        
+        heart.addEventListener('click', function() {
+            // Анимация сердца
+            this.classList.add('heart-beat');
+            setTimeout(() => {
+                this.classList.remove('heart-beat');
+            }, 1000);
+            
+            // Создание эффекта пульсации
+            const pulse = document.createElement('div');
+            pulse.className = 'absolute inset-0 rounded-full bg-red-200 opacity-70';
+            pulse.style.transform = 'scale(0)';
+            pulse.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+            this.parentNode.appendChild(pulse);
+            
+            setTimeout(() => {
+                pulse.style.transform = 'scale(2)';
+                pulse.style.opacity = '0';
+            }, 10);
+            
+            setTimeout(() => {
+                pulse.remove();
+            }, 1100);
+            
+            // Создание конфетти
+            createConfetti();
+            
+            // Показ сообщения
+            showMessage();
+            
+            clickCount++;
+            
+            // После 5 кликов добавляем особый эффект
+            if (clickCount === 5) {
+                const specialMessage = document.createElement('div');
+                specialMessage.className = 'message text-center p-4 bg-rose-100 rounded-lg shadow-lg border border-rose-200';
+                specialMessage.innerHTML = '<p class="text-xl font-bold text-rose-700">Ты нажала 5 раз! Значит, я люблю тебя в 5 раз сильнее! ❤️</p>';
+                messagesContainer.appendChild(specialMessage);
+                
+                setTimeout(() => {
+                    specialMessage.classList.add('show');
+                }, 10);
+                
+                // Создаем много конфетти для особого случая
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        createConfetti();
+                    }, i * 50);
+                }
+            }
+        });
+        
+        function showMessage() {
+            // Выбираем случайное сообщение
+            const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+            
+            // Создаем элемент сообщения
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message bg-white p-4 rounded-lg shadow-md border border-pink-200';
+            messageElement.innerHTML = `<p class="text-pink-800">${randomMessage}</p>`;
+            
+            // Добавляем сообщение в контейнер
+            messagesContainer.appendChild(messageElement);
+            
+            // Показываем сообщение с анимацией
+            setTimeout(() => {
+                messageElement.classList.add('show');
+            }, 10);
+            
+            // Удаляем старые сообщения, если их больше 5
+            if (messagesContainer.children.length > 5) {
+                setTimeout(() => {
+                    messagesContainer.removeChild(messagesContainer.children[0]);
+                }, 10000);
+            }
+        }
+        
+        function createConfetti() {
+            const colors = ['#ff0000', '#ff69b4', '#ff1493', '#ff00ff', '#ff6347'];
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = '-10px';
+            confetti.style.opacity = '1';
+            confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+            
+            // Случайная форма
+            if (Math.random() > 0.5) {
+                confetti.style.borderRadius = '50%';
+            } else {
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 5 + 2 + 'px';
+            }
+            
+            document.body.appendChild(confetti);
+            
+            // Анимация падения
+            const animationDuration = Math.random() * 3000 + 2000;
+            confetti.style.transition = `top ${animationDuration/1000}s linear, opacity ${animationDuration/2000}s ease-out`;
+            
+            setTimeout(() => {
+                confetti.style.top = '100vh';
+                confetti.style.opacity = '0';
+            }, 10);
+            
+            // Удаление после анимации
+            setTimeout(() => {
+                confetti.remove();
+            }, animationDuration);
+        }
+        
+        // Добавляем плавающие сердечки на задний план
+        for (let i = 0; i < 10; i++) {
+            createFloatingHeart();
+        }
+        
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'fas fa-heart absolute text-pink-200 text-xl md:text-2xl float';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = Math.random() * 100 + 'vh';
+            heart.style.animationDelay = Math.random() * 5 + 's';
+            heart.style.animationDuration = Math.random() * 10 + 5 + 's';
+            
+            document.body.appendChild(heart);
+        }
+    </script>
+</body>
+</html>
